@@ -39,7 +39,7 @@ class HomePage:
         file_one_label = ttk.Label(homepage, background='white', foreground='gray', width=80,
                                    textvariable=self.file_one_response)
         file_one_label.grid(row=1, column=1, columnspan=2, sticky='w', padx=10)
-        file_one_button = ttk.Button(homepage, text="Select File 1", command=self.load_file_one)
+        file_one_button = ttk.Button(homepage, text="File 1", command=self.load_file_one)
         file_one_button.grid(row=1, column=3, sticky='w', padx=10)
 
         # row 2: file 2 button + label
@@ -48,14 +48,14 @@ class HomePage:
         file_two_label = ttk.Label(homepage, background='white', foreground='gray', width=80,
                                    textvariable=self.file_two_response)
         file_two_label.grid(row=2, column=1, columnspan=2, sticky='w', padx=10)
-        file_two_button = ttk.Button(homepage, text="Select File 2", command=self.load_file_two)
-        # TODO: add disable file_two_button till file_one is not ""
-        file_two_button.grid(row=2, column=3, sticky='w', padx=10)
+        self.file_two_button = ttk.Button(homepage, text="File 2", command=self.load_file_two)
+        self.file_two_button.grid(row=2, column=3, sticky='w', padx=10)
+        self.file_two_button['state'] = DISABLED
 
         # row 3: compare button
-        compare_button = ttk.Button(homepage, text="Compare!", command=self.compare)
-        # TODO: add disable compare till file_one and file_two are not ""
-        compare_button.grid(column=1, row=3, columnspan=3)
+        self.compare_button = ttk.Button(homepage, text="Compare!", command=self.compare)
+        self.compare_button.grid(column=1, row=3, columnspan=3)
+        self.compare_button['state'] = DISABLED
 
         # row 4
         # TODO: add reference to AllSpice
@@ -65,12 +65,16 @@ class HomePage:
         if filename:
             self.file_one = filename
             self.file_one_response.set(f"Selected {filename}")
+        if self.file_one != '':
+            self.file_two_button['state'] = NORMAL
 
     def load_file_two(self):
         filename = fd.askopenfilename(title='Select a file', initialdir=os.path.dirname(self.file_one),)
         if filename:
             self.file_two = filename
             self.file_two_response.set(f"Selected {filename}")
+        if self.file_one != '' and self.file_two != '':
+            self.compare_button['state'] = NORMAL
 
     def compare(self):
         allspice = os.path.join(os.path.expanduser('~'), 'AppData\\Local\\Programs\\allspice\\AllSpice.exe')
