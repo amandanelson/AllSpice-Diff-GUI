@@ -42,7 +42,12 @@ class HomePage:
         file_menu = Menu(menubar, tearoff=0)
         root['menu'] = menubar
         file_menu.add_command(label='Clear Files', command=self.clear_files)
-        file_menu.add_command(label='AllSpice Diff Website', command=self.open_url)
+        file_menu.add_command(label='AllSpice Diff Website',
+                              command=lambda url='https://www.allspice.io/diff-tool':
+                              webbrowser.open_new_tab(url))
+        file_menu.add_command(label='Github Website',
+                              command=lambda url='https://github.com/amandanelson/AllSpice-Diff-GUI':
+                              webbrowser.open_new_tab(url))
         menubar.add_cascade(menu=file_menu, label='Tools')
 
         # row 1: file 1 button + label
@@ -100,9 +105,6 @@ class HomePage:
         except subprocess.CalledProcessError as e:
             ms.showerror("AllSpice Diff Not Found",
                          "Please make sure AllSpice Diff is installed and added to your PATH.")
-
-    def open_url(self):
-        webbrowser.open_new_tab('https://www.allspice.io/diff-tool')
 
     def clear_files(self):
         self.file_one = ''
