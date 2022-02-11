@@ -42,25 +42,24 @@ class HomePage:
         file_menu = Menu(menubar, tearoff=0)
         root['menu'] = menubar
         file_menu.add_command(label='Clear Files', command=self.clear_files)
-        file_menu.add_command(label='AllSpice Diff', command=self.open_url)
+        file_menu.add_command(label='AllSpice Diff Website', command=self.open_url)
         menubar.add_cascade(menu=file_menu, label='Tools')
 
         # row 1: file 1 button + label
         self.file_one = ""
         self.file_one_response = StringVar(value='Select a file')
-        file_one_label = ttk.Label(homepage, background='white', foreground='gray', width=80,
+        self.file_one_label = ttk.Entry(homepage, background='white', foreground='gray', width=80,
                                    textvariable=self.file_one_response)
-        # TODO: change from Label to Entry
-        file_one_label.grid(row=1, column=1, columnspan=2, sticky='w', padx=10)
+        self.file_one_label.grid(row=1, column=1, columnspan=2, sticky='w', padx=10)
         file_one_button = ttk.Button(homepage, text="New File", command=self.load_file_one)
         file_one_button.grid(row=1, column=3, sticky='w', padx=10)
 
         # row 2: file 2 button + label
         self.file_two = ""
         self.file_two_response = StringVar(value='Select a file')
-        file_two_label = ttk.Label(homepage, background='white', foreground='gray', width=80,
+        self.file_two_label = ttk.Entry(homepage, background='white', foreground='gray', width=80,
                                    textvariable=self.file_two_response)
-        file_two_label.grid(row=2, column=1, columnspan=2, sticky='w', padx=10)
+        self.file_two_label.grid(row=2, column=1, columnspan=2, sticky='w', padx=10)
         self.file_two_button = ttk.Button(homepage, text="Old File", command=self.load_file_two)
         self.file_two_button.grid(row=2, column=3, sticky='w', padx=10)
         self.file_two_button['state'] = DISABLED
@@ -78,8 +77,9 @@ class HomePage:
                                       filetypes=self.file_types)
         if filename:
             self.file_one = filename
-            self.file_one_response.set(f"Selected {filename}")
+            self.file_one_response.set(filename)
         if self.file_one != '':
+            self.file_one_label.configure(foreground='black')
             self.file_two_button['state'] = NORMAL
             self.compare_button['state'] = NORMAL
 
@@ -87,8 +87,9 @@ class HomePage:
         filename = fd.askopenfilename(title='Select a file', initialdir=os.path.dirname(self.file_one),
                                       filetypes=self.file_types)
         if filename:
+            self.file_two_label.configure(foreground='black')
             self.file_two = filename
-            self.file_two_response.set(f"Selected {filename}")
+            self.file_two_response.set(filename)
 
     def compare(self):
         try:
@@ -106,8 +107,10 @@ class HomePage:
     def clear_files(self):
         self.file_one = ''
         self.file_one_response.set("File cleared")
+        self.file_one_label.configure(foreground='gray')
         self.file_two = ''
         self.file_two_response.set("File cleared")
+        self.file_two_label.configure(foreground='gray')
         self.file_two_button['state'] = DISABLED
         self.compare_button['state'] = DISABLED
 
