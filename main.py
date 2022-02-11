@@ -6,11 +6,14 @@ from tkinter import filedialog as fd
 from tkinter import messagebox as ms
 import os
 import subprocess
+import webbrowser
+from PIL import Image, ImageTk
 
 
 class HomePage:
     def __init__(self, root: ttk):
-        root.title("AllSpice Comparison Tool")
+        root.title("AllSpice Diff Comparison Tool")
+        root.iconphoto(False, PhotoImage(file='allspiceicon.png'))
         root.geometry("600x180")
         root.columnconfigure(0, weight=1)
         root.rowconfigure(0, weight=1)
@@ -34,11 +37,20 @@ class HomePage:
         else:
             self.initial_dir = os.path.expanduser('~')
 
+        # menu
+        menubar = Menu(root)
+        file_menu = Menu(menubar, tearoff=0)
+        root['menu'] = menubar
+        file_menu.add_command(label='Clear Files', command=self.clear_files)
+        file_menu.add_command(label='AllSpice Diff', command=self.open_url)
+        menubar.add_cascade(menu=file_menu, label='Tools')
+
         # row 1: file 1 button + label
         self.file_one = ""
         self.file_one_response = StringVar(value='Select a file')
         file_one_label = ttk.Label(homepage, background='white', foreground='gray', width=80,
                                    textvariable=self.file_one_response)
+        # TODO: change from Label to Entry
         file_one_label.grid(row=1, column=1, columnspan=2, sticky='w', padx=10)
         file_one_button = ttk.Button(homepage, text="New File", command=self.load_file_one)
         file_one_button.grid(row=1, column=3, sticky='w', padx=10)
@@ -54,12 +66,12 @@ class HomePage:
         self.file_two_button['state'] = DISABLED
 
         # row 3: compare button
-        self.compare_button = ttk.Button(homepage, text="Show Diff", command=self.compare)
+        image = Image.open('allspiceicon.png')
+        image = image.resize((40, 40), Image.ANTIALIAS)
+        self.img = ImageTk.PhotoImage(image)
+        self.compare_button = ttk.Button(homepage, image=self.img, text="Show Diff", compound=LEFT, command=self.compare)
         self.compare_button.grid(column=1, row=3, columnspan=3)
         self.compare_button['state'] = DISABLED
-
-        # row 4
-        # TODO: add reference to AllSpice
 
     def load_file_one(self):
         filename = fd.askopenfilename(title='Select a file', initialdir=self.initial_dir,
@@ -87,6 +99,17 @@ class HomePage:
         except subprocess.CalledProcessError as e:
             ms.showerror("AllSpice Diff Not Found",
                          "Please make sure AllSpice Diff is installed and added to your PATH.")
+
+    def open_url(self):
+        webbrowser.open_new_tab('https://www.allspice.io/diff-tool')
+
+    def clear_files(self):
+        self.file_one = ''
+        self.file_one_response.set("File cleared")
+        self.file_two = ''
+        self.file_two_response.set("File cleared")
+        self.file_two_button['state'] = DISABLED
+        self.compare_button['state'] = DISABLED
 
 
 if __name__ == '__main__':
